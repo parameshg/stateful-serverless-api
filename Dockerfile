@@ -2,11 +2,11 @@ FROM public.ecr.aws/lambda/dotnet:6 AS base
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim as build
 WORKDIR "/src"
-COPY ["Counter.csproj", "."]
+COPY ["source/Counter.csproj", "."]
 RUN dotnet restore "./Counter.csproj"
 
 WORKDIR "/src"
-COPY . .
+COPY ./source .
 RUN dotnet build "Counter.csproj" --configuration Release --output /app/build
 
 FROM build AS publish
