@@ -7,7 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Counter", "Counter.csproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{90C1F21D-3D3B-4D04-A4D2-E4A57BB25706}"
 	ProjectSection(SolutionItems) = preProject
-		..\.terraform\lambda.tf = ..\.terraform\lambda.tf
+		..\Dockerfile = ..\Dockerfile
+		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
+		..\README.md = ..\README.md
+		..\serverless.tf = ..\serverless.tf
 	EndProjectSection
 EndProject
 Global
