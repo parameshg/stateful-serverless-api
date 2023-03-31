@@ -1,61 +1,61 @@
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 
-namespace Counter.Repositories;
-
-public static class DynamoExtensions
+namespace Api.Repositories
 {
-    private const string TICKER = "counter";
-
-    public static async Task Setup(this AmazonDynamoDBClient db)
+    public static class DynamoExtensions
     {
-        if (!await db.TickerTableExists())
+        private const string TICKER = "counter";
+
+        public static async Task Setup(this AmazonDynamoDBClient db)
         {
-            db.CreateTickerTable();
-        }
-    }
-
-    private static async Task<bool> TableExists(this AmazonDynamoDBClient db, string name)
-    {
-        var result = false;
-
-        try
-        {
-            var response = await db.DescribeTableAsync(name);
-
-            if (response != null && response.Table != null)
+            if (!await db.TickerTableExists())
             {
-                result = response.Table.TableName == name;
+                db.CreateTickerTable();
             }
         }
-        catch (ResourceNotFoundException)
+
+        private static async Task<bool> TableExists(this AmazonDynamoDBClient db, string name)
         {
-            result = false;
+            var result = false;
+
+            try
+            {
+                var response = await db.DescribeTableAsync(name);
+
+                if (response != null && response.Table != null)
+                {
+                    result = response.Table.TableName == name;
+                }
+            }
+            catch (ResourceNotFoundException)
+            {
+                result = false;
+            }
+
+            return result;
         }
 
-        return result;
-    }
+        private static async Task<bool> TickerTableExists(this AmazonDynamoDBClient db)
+        {
+            return await db.TableExists(TICKER);
+        }
 
-    private static async Task<bool> TickerTableExists(this AmazonDynamoDBClient db)
-    {
-        return await db.TableExists(TICKER);
-    }
-
-    private static void CreateTickerTable(this AmazonDynamoDBClient db)
-    {
-        var schema = new List<KeySchemaElement>
+        private static void CreateTickerTable(this AmazonDynamoDBClient db)
+        {
+            var schema = new List<KeySchemaElement>
         {
             new KeySchemaElement { AttributeName = "Name", KeyType = KeyType.HASH },
             new KeySchemaElement { AttributeName = "Value", KeyType = KeyType.HASH }
         };
 
-        var attributes = new List<AttributeDefinition>
+            var attributes = new List<AttributeDefinition>
         {
             new AttributeDefinition { AttributeName = "Name", AttributeType = ScalarAttributeType.S },
             new AttributeDefinition { AttributeName = "Value", AttributeType = ScalarAttributeType.N }
         };
 
-        var response = db.CreateTableAsync(TICKER, schema, attributes, new ProvisionedThroughput(0, 0));
+            var response = db.CreateTableAsync(TICKER, schema, attributes, new ProvisionedThroughput(0, 0));
+        }
     }
 }

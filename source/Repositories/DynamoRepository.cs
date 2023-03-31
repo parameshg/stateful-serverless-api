@@ -1,73 +1,74 @@
 using Amazon.DynamoDBv2.DataModel;
-using Counter.Domain;
+using Api.Domain;
 using EnsureThat;
 
-namespace Counter.Repositories;
-
-public class DynamoRepository : IRepository
+namespace Api.Repositories
 {
-    [DynamoDBTable("statefull-serverless-api")]
-    private class Entity
+    public class DynamoRepository : IRepository
     {
-        [DynamoDBHashKey]
-        [DynamoDBProperty("name")]
-        public string Name { get; set; }
-
-        [DynamoDBProperty("value")]
-        public int Value { get; set; }
-    }
-
-    private IDynamoDBContext db;
-
-    public DynamoRepository(IDynamoDBContext context)
-    {
-        db = EnsureArg.IsNotNull(context);
-    }
-
-    public async Task<Ticker> GetCounter(string name)
-    {
-        var result = new Ticker();
-
-        var entity = await db.LoadAsync<Entity>(name);
-
-        if (entity != null)
+        [DynamoDBTable("statefull-serverless-api")]
+        private class Entity
         {
-            result = new Ticker { Name = entity.Name, Value = entity.Value };
+            [DynamoDBHashKey]
+            [DynamoDBProperty("name")]
+            public string Name { get; set; }
+
+            [DynamoDBProperty("value")]
+            public int Value { get; set; }
         }
 
-        return result;
-    }
+        private IDynamoDBContext db;
 
-    public async Task<bool> CreateCounter(string name, int value)
-    {
-        var result = false;
+        public DynamoRepository(IDynamoDBContext context)
+        {
+            db = EnsureArg.IsNotNull(context);
+        }
 
-        await db.SaveAsync(new Entity { Name = name, Value = value });
+        public async Task<Ticker> GetCounter(string name)
+        {
+            var result = new Ticker();
 
-        result = true;
+            var entity = await db.LoadAsync<Entity>(name);
 
-        return result;
-    }
+            if (entity != null)
+            {
+                result = new Ticker { Name = entity.Name, Value = entity.Value };
+            }
 
-    public async Task<bool> UpdateCounter(string name, int value)
-    {
-        var result = false;
+            return result;
+        }
 
-        await db.SaveAsync(new Entity { Name = name, Value = value });
+        public async Task<bool> CreateCounter(string name, int value)
+        {
+            var result = false;
 
-        result = true;
+            await db.SaveAsync(new Entity { Name = name, Value = value });
 
-        return result;
-    }
+            result = true;
 
-    public async Task<bool> DeleteCounter(string name)
-    {
-        var result = false;
+            return result;
+        }
 
-        await db.DeleteAsync<Entity>(name);
+        public async Task<bool> UpdateCounter(string name, int value)
+        {
+            var result = false;
 
-        result = true;
+            await db.SaveAsync(new Entity { Name = name, Value = value });
 
-        return result;
+            result = true;
+
+            return result;
+        }
+
+        public async Task<bool> DeleteCounter(string name)
+        {
+            var result = false;
+
+            await db.DeleteAsync<Entity>(name);
+
+            result = true;
+
+            return result;
+        }
     }
 }

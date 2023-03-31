@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "ci" ]
 jobs:
-  release:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Codebase
@@ -15,10 +15,10 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Restore Dependencies
-      run: dotnet restore source/Counter.csproj
+      run: dotnet restore source/Api.csproj
 
     - name: Build Codebase
-      run: dotnet build  source/Counter.csproj --no-restore
+      run: dotnet build  source/Api.csproj --no-restore
 
     #- name: Login Image Repository (Docker Hub)
     #  uses: docker/login-action@v2

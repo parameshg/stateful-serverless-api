@@ -1,14 +1,15 @@
-using Counter.Domain;
+using Api.Domain;
 
-namespace Counter.Repositories;
-
-public interface IRepository
+namespace Api.Repositories
 {
-    Task<Ticker> GetCounter(string name);
+    public interface IRepository
+    {
+        Task<Ticker> GetCounter(string name);
 
-    Task<bool> CreateCounter(string name, int value);
+        Task<bool> CreateCounter(string name, int value);
 
-    Task<bool> UpdateCounter(string name, int value);
+        Task<bool> UpdateCounter(string name, int value);
 
-    Task<bool> DeleteCounter(string name);
+        Task<bool> DeleteCounter(string name);
+    }
 }

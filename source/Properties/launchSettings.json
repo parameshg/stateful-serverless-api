@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "Counter": {
+    "Api": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:58706;http://localhost:58707"
+      "applicationUrl": "http://localhost:5678"
     },
     "Mock Lambda Test Tool": {
       "commandName": "Executable",

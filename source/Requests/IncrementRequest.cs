@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Counter.Requests;
-
-public class IncrementRequest
+namespace Api.Requests
 {
-    [Required]
-    [StringLength(32)]
-    [FromRoute(Name = "name")]
-    public string Name { get; set; }
+    public class IncrementRequest
+    {
+        [Required]
+        [StringLength(32)]
+        [FromRoute(Name = "name")]
+        public string Name { get; set; }
+    }
 }

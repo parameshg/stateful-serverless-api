@@ -1,9 +1,10 @@
-namespace Counter;
-
-public class LocalEntryPoint
+namespace Api
 {
-    public static void Main(string[] args)
+    public class LocalEntryPoint
     {
-        Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(cfg => cfg.UseStartup<Startup>()).Build().Run();
+        public static void Main(string[] args)
+        {
+            Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(cfg => cfg.UseStartup<Startup>()).Build().Run();
+        }
     }
 }

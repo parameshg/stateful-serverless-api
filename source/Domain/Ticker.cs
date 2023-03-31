@@ -1,4 +1,4 @@
-﻿namespace Counter.Domain
+﻿namespace Api.Domain
 {
     public class Ticker
     {

@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Counter.Requests;
-
-public class UpdateRequest
+namespace Api.Requests
 {
-    [FromBody]
-    [Required]
-    [StringLength(32)]
-    public string Name { get; set; }
+    public class UpdateRequest
+    {
+        [FromBody]
+        [Required]
+        [StringLength(32)]
+        public string Name { get; set; }
 
-    [FromBody]
-    public int Value { get; set; } = 0;
+        [FromBody]
+        public int Value { get; set; } = 0;
+    }
 }

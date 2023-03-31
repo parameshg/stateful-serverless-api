@@ -1,14 +1,13 @@
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.Lambda.Core;
 using Amazon.Runtime;
-using Counter.Pipelines;
-using Counter.Repositories;
+using Api.Pipelines;
+using Api.Repositories;
 using EnsureThat;
 using MediatR;
 
-namespace Counter
+namespace Api
 {
     public class Startup
     {

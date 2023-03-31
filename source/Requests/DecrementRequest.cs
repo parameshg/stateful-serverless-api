@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
-namespace Counter.Requests;
-
-public class DecrementRequest
+namespace Api.Requests
 {
-    [Required]
-    [StringLength(32)]
-    [FromRoute(Name = "name")]
-    public string Name { get; set; }
+    public class DecrementRequest
+    {
+        [Required]
+        [StringLength(32)]
+        [FromRoute(Name = "name")]
+        public string Name { get; set; }
+    }
 }

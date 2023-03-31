@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using System.Linq;
 using System.Text.Json;
 
-namespace Counter.Middlewares
+namespace Api.Middlewares
 {
     public sealed class ValidationMiddleware : IMiddleware
     {

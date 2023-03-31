@@ -28,7 +28,7 @@ variable "AWS_SECRET_ACCESS_KEY" {
 variable "IMAGE_COMMAND" {
   type        = list(string)
   description = "Docker Image CMD Override"
-  default     = ["Counter::Counter.LambdaEntryPoint::FunctionHandlerAsync"]
+  default     = ["Api::Api.LambdaEntryPoint::FunctionHandlerAsync"]
 }
 
 variable "HTTP_TIMEOUT" {
