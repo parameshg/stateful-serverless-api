@@ -6,7 +6,7 @@ namespace Counter.Repositories;
 
 public class DynamoRepository : IRepository
 {
-    [DynamoDBTable("counter")]
+    [DynamoDBTable("statefull-serverless-api")]
     private class Entity
     {
         [DynamoDBHashKey]
@@ -28,7 +28,7 @@ public class DynamoRepository : IRepository
     {
         var result = new Ticker();
 
-        var entity = (await db.QueryAsync<Entity>(name).GetRemainingAsync()).FirstOrDefault();
+        var entity = await db.LoadAsync<Entity>(name);
 
         if (entity != null)
         {

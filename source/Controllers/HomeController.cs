@@ -107,7 +107,7 @@ public class HomeController : ControllerBase
 
         if (ModelState.IsValid)
         {
-            var response = await Mediator.Send(new UpdateCounterRequest { Name = request.Name });
+            var response = await Mediator.Send(new UpdateCounterRequest { Name = request.Name, Value = request.Value });
 
             if (response != null && response.Status)
             {

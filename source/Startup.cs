@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using Counter.Pipelines;
 using Counter.Repositories;
@@ -20,6 +21,19 @@ namespace Counter
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(cfg =>
+            {
+                cfg.AddLambdaLogger(new LambdaLoggerOptions
+                {
+                    IncludeCategory = true,
+                    IncludeEventId = true,
+                    IncludeException = true,
+                    IncludeLogLevel = true,
+                    IncludeNewline = true,
+                    IncludeScopes = true
+                });
+            });
+
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")) && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")))
             {
                 services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(new EnvironmentVariablesAWSCredentials(), RegionEndpoint.USWest2));

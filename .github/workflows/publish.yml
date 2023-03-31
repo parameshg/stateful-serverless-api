@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "ci" ]
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Codebase
