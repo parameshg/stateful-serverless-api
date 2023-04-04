@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "aspnetcore"
-    key    = "terraform-state/statefull-serverless-api.tfstate"
+    key    = "terraform-state/stateful-serverless-api.tfstate"
   }
 }
 
@@ -45,7 +45,7 @@ provider "aws" {
 
 # AWS IAM ROLE ####################################################################################################################################################
 
-data "aws_iam_policy_document" "statefull-serverless-api-trust" {
+data "aws_iam_policy_document" "stateful-serverless-api-trust" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -55,36 +55,36 @@ data "aws_iam_policy_document" "statefull-serverless-api-trust" {
   }
 }
 
-data "aws_iam_policy_document" "statefull-serverless-api-policy" {
+data "aws_iam_policy_document" "stateful-serverless-api-policy" {
   statement {
     actions   = ["dynamodb:*"]
     resources = ["arn:aws:dynamodb:${var.AWS_REGION}:${var.AWS_ACCOUNT}:table/*"]
   }
 }
 
-resource "aws_iam_role" "statefull-serverless-api" {
-  name               = "statefull-serverless-api"
+resource "aws_iam_role" "stateful-serverless-api" {
+  name               = "stateful-serverless-api"
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
-  assume_role_policy = data.aws_iam_policy_document.statefull-serverless-api-trust.json
+  assume_role_policy = data.aws_iam_policy_document.stateful-serverless-api-trust.json
   inline_policy {
     name   = "inline-policy"
-    policy = data.aws_iam_policy_document.statefull-serverless-api-policy.json
+    policy = data.aws_iam_policy_document.stateful-serverless-api-policy.json
   }
   tags               = {
     provisioner      = "terraform"
     executioner      = "github-actions"
-    project          = "statefull-serverless-api"
-    url              = "https://github.com/parameshg/statefull-serverless-api"
+    project          = "stateful-serverless-api"
+    url              = "https://github.com/parameshg/stateful-serverless-api"
   }
 }
 
 # AWS LAMBDA ######################################################################################################################################################
 
-resource "aws_lambda_function" "statefull-serverless-api" {
-  function_name = "statefull-serverless-api"
-  role          = "${aws_iam_role.statefull-serverless-api.arn}"
+resource "aws_lambda_function" "stateful-serverless-api" {
+  function_name = "stateful-serverless-api"
+  role          = "${aws_iam_role.stateful-serverless-api.arn}"
   package_type  = "Image"
-  image_uri     = "${var.AWS_ACCOUNT}.dkr.ecr.${var.AWS_REGION}.amazonaws.com/statefull-serverless-api:latest"
+  image_uri     = "${var.AWS_ACCOUNT}.dkr.ecr.${var.AWS_REGION}.amazonaws.com/stateful-serverless-api:latest"
   image_config    {
     command     = var.IMAGE_COMMAND
   }
@@ -92,16 +92,16 @@ resource "aws_lambda_function" "statefull-serverless-api" {
   tags          = {
     provisioner = "terraform"
     executioner = "github-actions"
-    project     = "statefull-serverless-api"
-    url         = "https://github.com/parameshg/statefull-serverless-api"
+    project     = "stateful-serverless-api"
+    url         = "https://github.com/parameshg/stateful-serverless-api"
   }
 }
 
 # AWS API GATEWAY #################################################################################################################################################
 
-resource "aws_api_gateway_rest_api" "statefull-serverless-api" {
-  name                         = "statefull-serverless-api"
-  description                  = "Statefull Serverless Api"
+resource "aws_api_gateway_rest_api" "stateful-serverless-api" {
+  name                         = "stateful-serverless-api"
+  description                  = "Stateful Serverless Api"
   disable_execute_api_endpoint = true
   endpoint_configuration {
     types                      = ["REGIONAL"]
@@ -109,92 +109,92 @@ resource "aws_api_gateway_rest_api" "statefull-serverless-api" {
   tags                         = {
     provisioner                = "terraform"
     executioner                = "github-actions"
-    project                    = "statefull-serverless-api"
-    url                        = "https://github.com/parameshg/statefull-serverless-api"
+    project                    = "stateful-serverless-api"
+    url                        = "https://github.com/parameshg/stateful-serverless-api"
   }
 }
 
-resource "aws_api_gateway_resource" "statefull-serverless-api" {
-  rest_api_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-  parent_id               = "${aws_api_gateway_rest_api.statefull-serverless-api.root_resource_id}"
+resource "aws_api_gateway_resource" "stateful-serverless-api" {
+  rest_api_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+  parent_id               = "${aws_api_gateway_rest_api.stateful-serverless-api.root_resource_id}"
   path_part               = "{proxy+}"
 }
 
-resource "aws_api_gateway_method" "statefull-serverless-api" {
-  rest_api_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-  resource_id             = "${aws_api_gateway_resource.statefull-serverless-api.id}"
+resource "aws_api_gateway_method" "stateful-serverless-api" {
+  rest_api_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+  resource_id             = "${aws_api_gateway_resource.stateful-serverless-api.id}"
   http_method             = "ANY"
   authorization           = "NONE"
   api_key_required        = true
 }
 
-resource "aws_api_gateway_method_response" "statefull-serverless-api" {
-    rest_api_id           = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-    resource_id           = "${aws_api_gateway_resource.statefull-serverless-api.id}"
-    http_method           = "${aws_api_gateway_method.statefull-serverless-api.http_method}"
+resource "aws_api_gateway_method_response" "stateful-serverless-api" {
+    rest_api_id           = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+    resource_id           = "${aws_api_gateway_resource.stateful-serverless-api.id}"
+    http_method           = "${aws_api_gateway_method.stateful-serverless-api.http_method}"
     status_code           = "200"
     response_models       = {
       "application/json"  = "Empty"
     }
 }
 
-resource "aws_api_gateway_integration" "statefull-serverless-api" {
-  rest_api_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-  resource_id             = "${aws_api_gateway_method.statefull-serverless-api.resource_id}"
-  http_method             = "${aws_api_gateway_method.statefull-serverless-api.http_method}"
+resource "aws_api_gateway_integration" "stateful-serverless-api" {
+  rest_api_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+  resource_id             = "${aws_api_gateway_method.stateful-serverless-api.resource_id}"
+  http_method             = "${aws_api_gateway_method.stateful-serverless-api.http_method}"
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "${aws_lambda_function.statefull-serverless-api.invoke_arn}"
+  uri                     = "${aws_lambda_function.stateful-serverless-api.invoke_arn}"
 }
 
-resource "aws_api_gateway_method" "statefull-serverless-api-root" {
-  rest_api_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-  resource_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.root_resource_id}"
+resource "aws_api_gateway_method" "stateful-serverless-api-root" {
+  rest_api_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+  resource_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.root_resource_id}"
   http_method             = "ANY"
   authorization           = "NONE"
   api_key_required        = true
 }
 
-resource "aws_api_gateway_integration" "statefull-serverless-api-root" {
-  rest_api_id             = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
-  resource_id             = "${aws_api_gateway_method.statefull-serverless-api-root.resource_id}"
-  http_method             = "${aws_api_gateway_method.statefull-serverless-api-root.http_method}"
+resource "aws_api_gateway_integration" "stateful-serverless-api-root" {
+  rest_api_id             = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
+  resource_id             = "${aws_api_gateway_method.stateful-serverless-api-root.resource_id}"
+  http_method             = "${aws_api_gateway_method.stateful-serverless-api-root.http_method}"
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "${aws_lambda_function.statefull-serverless-api.invoke_arn}"
+  uri                     = "${aws_lambda_function.stateful-serverless-api.invoke_arn}"
 }
 
-resource "aws_api_gateway_deployment" "statefull-serverless-api" {
+resource "aws_api_gateway_deployment" "stateful-serverless-api" {
   depends_on = [
-    aws_api_gateway_integration.statefull-serverless-api,
-    aws_api_gateway_integration.statefull-serverless-api-root,
+    aws_api_gateway_integration.stateful-serverless-api,
+    aws_api_gateway_integration.stateful-serverless-api-root,
   ]
-  rest_api_id = "${aws_api_gateway_rest_api.statefull-serverless-api.id}"
+  rest_api_id = "${aws_api_gateway_rest_api.stateful-serverless-api.id}"
 }
 
-resource "aws_api_gateway_stage" "statefull-serverless-api" {
-  deployment_id = aws_api_gateway_deployment.statefull-serverless-api.id
-  rest_api_id   = aws_api_gateway_rest_api.statefull-serverless-api.id
+resource "aws_api_gateway_stage" "stateful-serverless-api" {
+  deployment_id = aws_api_gateway_deployment.stateful-serverless-api.id
+  rest_api_id   = aws_api_gateway_rest_api.stateful-serverless-api.id
   stage_name    = "prod"
 }
 
-resource "aws_lambda_permission" "statefull-serverless-api" {
+resource "aws_lambda_permission" "stateful-serverless-api" {
   statement_id  = "AllowExecutionFromApiGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.statefull-serverless-api.function_name
+  function_name = aws_lambda_function.stateful-serverless-api.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.AWS_REGION}:${var.AWS_ACCOUNT}:${aws_api_gateway_rest_api.statefull-serverless-api.id}/*"
+  source_arn    = "arn:aws:execute-api:${var.AWS_REGION}:${var.AWS_ACCOUNT}:${aws_api_gateway_rest_api.stateful-serverless-api.id}/*"
   # http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
 }
 
 # AWS API GATEWAY USAGE PLAN & API KEY ############################################################################################################################
 
-resource "aws_api_gateway_usage_plan" "statefull-serverless-api" {
-  name              = "statefull-serverless-api"
-  description       = "Statefull Serverless Api Usage Plan"
+resource "aws_api_gateway_usage_plan" "stateful-serverless-api" {
+  name              = "stateful-serverless-api"
+  description       = "Stateful Serverless Api Usage Plan"
   api_stages {
-    api_id          = aws_api_gateway_rest_api.statefull-serverless-api.id
-    stage           = aws_api_gateway_stage.statefull-serverless-api.stage_name
+    api_id          = aws_api_gateway_rest_api.stateful-serverless-api.id
+    stage           = aws_api_gateway_stage.stateful-serverless-api.stage_name
   }
   quota_settings {
     limit           = 100
@@ -207,20 +207,20 @@ resource "aws_api_gateway_usage_plan" "statefull-serverless-api" {
   }
 }
 
-resource "aws_api_gateway_api_key" "statefull-serverless-api" {
-  name = "statefull-serverless-api"
+resource "aws_api_gateway_api_key" "stateful-serverless-api" {
+  name = "stateful-serverless-api"
 }
 
-resource "aws_api_gateway_usage_plan_key" "statefull-serverless-api" {
-  key_id        = aws_api_gateway_api_key.statefull-serverless-api.id
+resource "aws_api_gateway_usage_plan_key" "stateful-serverless-api" {
+  key_id        = aws_api_gateway_api_key.stateful-serverless-api.id
   key_type      = "API_KEY"
-  usage_plan_id = aws_api_gateway_usage_plan.statefull-serverless-api.id
+  usage_plan_id = aws_api_gateway_usage_plan.stateful-serverless-api.id
 }
 
 # AWS DYNAMODB ############################################################################################################################
 
-resource "aws_dynamodb_table" "statefull-serverless-api" {
-  name              = "statefull-serverless-api"
+resource "aws_dynamodb_table" "stateful-serverless-api" {
+  name              = "stateful-serverless-api"
   billing_mode      = "PAY_PER_REQUEST"
   hash_key          = "name"
   attribute {
@@ -235,7 +235,7 @@ resource "aws_dynamodb_table" "statefull-serverless-api" {
   tags              = {
     provisioner     = "terraform"
     executioner     = "github-actions"
-    project         = "statefull-serverless-api"
-    url             = "https://github.com/parameshg/statefull-serverless-api"
+    project         = "stateful-serverless-api"
+    url             = "https://github.com/parameshg/stateful-serverless-api"
   }
 }

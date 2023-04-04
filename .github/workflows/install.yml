@@ -1,7 +1,7 @@
-name: publish
+name: install
 on:
-  push:
-    branches: [ "ci" ]
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,19 +20,6 @@ jobs:
     - name: Build Codebase
       run: dotnet build  source/Api.csproj --no-restore
 
-    #- name: Login Image Repository (Docker Hub)
-    #  uses: docker/login-action@v2
-    #  with:
-    #    username: ${{ secrets.DOCKER_USERNAME }}
-    #    password: ${{ secrets.DOCKER_PASSWORD }}
-
-    #- name: Build & Push Image (Docker Hub)
-    #  uses: docker/build-push-action@v4
-    #  with:
-    #    context: .
-    #    push: true
-    #    tags: parameshg/statefull-serverless-api:latest
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -46,13 +33,13 @@ jobs:
 
     - name: Build & Push Image (AWS ECR)
       run: |
-        docker build -t ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/statefull-serverless-api:latest .
-        docker push ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/statefull-serverless-api:latest
+        docker build -t ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest .
+        docker push ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest
  
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    # - name: Setup Terraform
+    #   uses: hashicorp/setup-terraform@v1
+    #   with:
+    #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
     - name: Initialize Terraform
       run: terraform init -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"

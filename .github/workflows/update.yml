@@ -1,0 +1,42 @@
+name: update
+on:
+  push:
+    branches: [ "ci" ]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Codebase
+      uses: actions/checkout@v3
+
+    - name: Setup Dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore source/Api.csproj
+
+    - name: Build Codebase
+      run: dotnet build  source/Api.csproj --no-restore
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        mask-aws-account-id: true
+
+    - name: Login AWS ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build & Push Image (AWS ECR)
+      run: |
+        docker build -t ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest .
+        docker push ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest
+
+    - name: Update AWS Lambda
+      run: |
+        aws lambda update-function-code --function-name stateful-serverless-api --image-uri "${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest"

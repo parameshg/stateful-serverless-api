@@ -6,7 +6,7 @@ namespace Api.Repositories
 {
     public class DynamoRepository : IRepository
     {
-        [DynamoDBTable("statefull-serverless-api")]
+        [DynamoDBTable("stateful-serverless-api")]
         private class Entity
         {
             [DynamoDBHashKey]
