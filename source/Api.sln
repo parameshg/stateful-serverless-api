@@ -8,9 +8,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{90C1F21D-3D3B-4D04-A4D2-E4A57BB25706}"
 	ProjectSection(SolutionItems) = preProject
 		..\Dockerfile = ..\Dockerfile
-		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
+		..\.github\workflows\install.yml = ..\.github\workflows\install.yml
 		..\README.md = ..\README.md
 		..\serverless.tf = ..\serverless.tf
+		..\.github\workflows\update.yml = ..\.github\workflows\update.yml
 	EndProjectSection
 EndProject
 Global

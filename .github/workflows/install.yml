@@ -23,9 +23,9 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-region: ${{ secrets.AWS_REGION }}
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{secrets.AWS_REGION}}
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         mask-aws-account-id: true
 
     - name: Login AWS ECR
@@ -33,24 +33,21 @@ jobs:
 
     - name: Build & Push Image (AWS ECR)
       run: |
-        docker build -t ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest .
-        docker push ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest
+        docker build -t ${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest .
+        docker push ${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest
  
-    # - name: Setup Terraform
-    #   uses: hashicorp/setup-terraform@v1
-    #   with:
-    #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
     - name: Initialize Terraform
-      run: terraform init -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      run: terraform init -backend-config="region=${{secrets.AWS_REGION}}" -backend-config="access_key=${{secrets.AWS_ACCESS_KEY_ID}}" -backend-config="secret_key=${{secrets.AWS_SECRET_ACCESS_KEY}}"
+      continue-on-error: false
 
     - name: Validate Terraform
       run: terraform validate
+      continue-on-error: false
 
     - name: Plan Terraform
-      run: terraform plan -var "AWS_ACCOUNT=${{ secrets.AWS_ACCOUNT }}" -var "AWS_REGION=${{ secrets.AWS_REGION }}" -var "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      run: terraform plan -var "AWS_ACCOUNT=${{secrets.AWS_ACCOUNT}}" -var "AWS_REGION=${{secrets.AWS_REGION}}" -var "AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}" -var "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" -var "SENTRY_ENDPOINT=${{secrets.SENTRY_ENDPOINT}}"
       continue-on-error: false
 
     - name: Apply Terraform
-      run: terraform apply -auto-approve -var "AWS_ACCOUNT=${{ secrets.AWS_ACCOUNT }}" -var "AWS_REGION=${{ secrets.AWS_REGION }}" -var "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      run: terraform apply -auto-approve -var "AWS_ACCOUNT=${{secrets.AWS_ACCOUNT}}" -var "AWS_REGION=${{secrets.AWS_REGION}}" -var "AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}" -var "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" -var "SENTRY_ENDPOINT=${{secrets.SENTRY_ENDPOINT}}"
       continue-on-error: false

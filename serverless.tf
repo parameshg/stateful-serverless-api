@@ -31,6 +31,12 @@ variable "IMAGE_COMMAND" {
   default     = ["Api::Api.LambdaEntryPoint::FunctionHandlerAsync"]
 }
 
+variable "SENTRY_ENDPOINT" {
+  type    = string
+  description = "Sentry Dsn"
+  default = ""
+}
+
 variable "HTTP_TIMEOUT" {
   type        = number
   description = "Lambda Timeout"
@@ -81,19 +87,24 @@ resource "aws_iam_role" "stateful-serverless-api" {
 # AWS LAMBDA ######################################################################################################################################################
 
 resource "aws_lambda_function" "stateful-serverless-api" {
-  function_name = "stateful-serverless-api"
-  role          = "${aws_iam_role.stateful-serverless-api.arn}"
-  package_type  = "Image"
-  image_uri     = "${var.AWS_ACCOUNT}.dkr.ecr.${var.AWS_REGION}.amazonaws.com/stateful-serverless-api:latest"
+  function_name  = "stateful-serverless-api"
+  role           = "${aws_iam_role.stateful-serverless-api.arn}"
+  package_type   = "Image"
+  image_uri      = "${var.AWS_ACCOUNT}.dkr.ecr.${var.AWS_REGION}.amazonaws.com/stateful-serverless-api:latest"
   image_config    {
-    command     = var.IMAGE_COMMAND
+    command      = var.IMAGE_COMMAND
   }
-  timeout       = var.HTTP_TIMEOUT
-  tags          = {
-    provisioner = "terraform"
-    executioner = "github-actions"
-    project     = "stateful-serverless-api"
-    url         = "https://github.com/parameshg/stateful-serverless-api"
+  environment      {
+    variables    = {
+      SENTRY_DSN = var.SENTRY_ENDPOINT
+    }
+  }
+  timeout        = var.HTTP_TIMEOUT
+  tags           = {
+    provisioner  = "terraform"
+    executioner  = "github-actions"
+    project      = "stateful-serverless-api"
+    url          = "https://github.com/parameshg/stateful-serverless-api"
   }
 }
 
