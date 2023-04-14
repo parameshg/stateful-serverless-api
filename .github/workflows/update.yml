@@ -29,14 +29,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         mask-aws-account-id: true
 
-    - name: Login AWS ECR
+    - name: Login Image Registry
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build & Push Image (AWS ECR)
-      run: |
-        docker build -t ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest .
-        docker push ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/stateful-serverless-api:latest
+    - name: Build Docker Image
+      run: docker build -t ${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest .
 
-    - name: Update AWS Lambda
-      run: |
-        aws lambda update-function-code --function-name stateful-serverless-api --image-uri "${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest"
+    - name: Push Docker Image
+      run: docker push ${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest
+
+    - name: Update Function
+      run: aws lambda update-function-code --function-name stateful-serverless-api --image-uri "${{secrets.AWS_ACCOUNT}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/stateful-serverless-api:latest"

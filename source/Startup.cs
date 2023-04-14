@@ -33,20 +33,29 @@ namespace Api
                 });
             });
 
-            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")) && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")))
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_REGION")))
             {
-                services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(new EnvironmentVariablesAWSCredentials(), RegionEndpoint.USWest2));
+                var region = RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_REGION"));
+
+                if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")) && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")))
+                {
+                    services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(new EnvironmentVariablesAWSCredentials(), region));
+                }
+                else
+                {
+                    // ServiceURL vs RegionEndpoint are mutually exclusive
+                    //services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(new AmazonDynamoDBConfig { ServiceURL = "http://localhost:8000" }));
+                    services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(region));
+                }
+
+                services.AddSingleton<IDynamoDBContext, DynamoDBContext>(i => new DynamoDBContext(i.GetService<IAmazonDynamoDB>()));
+
+                services.AddTransient<IRepository, DynamoRepository>();
             }
             else
             {
-                // ServiceURL vs RegionEndpoint are mutually exclusive
-                //services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(new AmazonDynamoDBConfig { ServiceURL = "http://localhost:8000" }));
-                services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(RegionEndpoint.USWest2));
+                services.AddTransient<IRepository, NullRepository>();
             }
-
-            services.AddSingleton<IDynamoDBContext, DynamoDBContext>(i => new DynamoDBContext(i.GetService<IAmazonDynamoDB>()));
-
-            services.AddTransient<IRepository, DynamoRepository>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(Startup)));
 
