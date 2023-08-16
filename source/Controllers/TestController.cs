@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sentry;
 
 namespace Api.Controllers
@@ -32,6 +33,13 @@ namespace Api.Controllers
                 timestamp = DateTime.Now,
                 enabled = SentrySdk.IsEnabled
             };
+        }
+
+        [Authorize]
+        [HttpGet("user")]
+        public string? GetUser()
+        {
+            return User?.Identity?.Name;
         }
     }
 }

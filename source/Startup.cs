@@ -2,10 +2,13 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
+using Api.Middlewares;
 using Api.Pipelines;
 using Api.Repositories;
 using EnsureThat;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api
 {
@@ -20,6 +23,8 @@ namespace Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IdentityMiddleware>();
+
             services.AddLogging(cfg =>
             {
                 cfg.AddLambdaLogger(new LambdaLoggerOptions
@@ -33,8 +38,24 @@ namespace Api
                 });
             });
 
+<<<<<<< HEAD
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_REGION")))
             {
+=======
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg =>
+            {
+                cfg.Authority = $"https://{Configuration["Auth0:Domain"]}";
+
+                cfg.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidAudience = Configuration["Auth0:Audience"],
+                    ValidIssuer = $"https://{Configuration["Auth0:Domain"]}"
+                };
+            });
+
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_REGION")))
+            {
+>>>>>>> 5547fe9 (update: added auth0)
                 var region = RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_REGION"));
 
                 if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")) && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")))
@@ -79,7 +100,11 @@ namespace Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+            app.UseMiddleware<IdentityMiddleware>();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }

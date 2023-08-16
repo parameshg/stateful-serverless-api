@@ -14,7 +14,9 @@
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.101.49" />
     <PackageReference Include="Ensure.That" Version="10.1.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
+    <PackageReference Include="Flurl.Http" Version="3.2.4" />
     <PackageReference Include="MediatR" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.21" />
     <PackageReference Include="Sentry.AspNetCore" Version="3.29.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
