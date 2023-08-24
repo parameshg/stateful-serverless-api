@@ -9,6 +9,7 @@ using EnsureThat;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace Api
 {
@@ -38,24 +39,19 @@ namespace Api
                 });
             });
 
-<<<<<<< HEAD
-            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_REGION")))
-            {
-=======
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, cfg =>
             {
                 cfg.Authority = $"https://{Configuration["Auth0:Domain"]}";
 
                 cfg.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidAudience = Configuration["Auth0:Audience"],
+                    ValidAudience = $"https://{Configuration["Auth0:Audience"]}",
                     ValidIssuer = $"https://{Configuration["Auth0:Domain"]}"
                 };
             });
 
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_REGION")))
             {
->>>>>>> 5547fe9 (update: added auth0)
                 var region = RegionEndpoint.GetBySystemName(Environment.GetEnvironmentVariable("AWS_REGION"));
 
                 if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")) && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")))
@@ -102,9 +98,9 @@ namespace Api
 
             app.UseAuthentication();
 
-            app.UseAuthorization();
-
             app.UseMiddleware<IdentityMiddleware>();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }

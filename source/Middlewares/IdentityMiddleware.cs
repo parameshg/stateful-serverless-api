@@ -7,17 +7,19 @@ namespace Api.Middlewares
 {
     public class IdentityMiddleware : IMiddleware
     {
-        public class User
+        private class User
         {
-            public string sub { get; set; }
+            public string? sub { get; set; }
 
-            public string nickname { get; set; }
+            public string? email { get; set; }
 
-            public string name { get; set; }
+            public string? name { get; set; }
 
-            public string picture { get; set; }
+            public string? nickname { get; set; }
 
-            public string updated_at { get; set; }
+            public string? picture { get; set; }
+
+            public string? updated_at { get; set; }
         }
 
         private IConfiguration Configuration { get; }
@@ -53,10 +55,11 @@ namespace Api.Middlewares
                             {
                                 new ClaimsIdentity(new Claim[]
                                 {
-                                    new Claim(ClaimTypes.NameIdentifier, user.sub),
-                                    new Claim(ClaimTypes.Name, user.name),
-                                    new Claim("nickname", user.nickname),
-                                    new Claim("picture", user.picture),
+                                    new Claim(ClaimTypes.NameIdentifier, user.sub ?? "unknown"),
+                                    new Claim(ClaimTypes.Email, user.email ?? "unknown"),
+                                    new Claim(ClaimTypes.Name, user.name ?? "unknown"),
+                                    new Claim("nickname", user.nickname ?? "unknown"),
+                                    new Claim("picture", user.picture ?? "unknown"),
                                 }, "Basic")
                             });
                         }
